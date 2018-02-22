@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { AppRegistry, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import {
   Image,
   Title,
@@ -45,6 +45,3 @@ export default class RepoDetailScreen extends Component {
       </Screen>;
   }
 }
-
-// skip this line if using Create React Native App
-AppRegistry.registerComponent("AwesomeProject", () => RepoDetailScreen);

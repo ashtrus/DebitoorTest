@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { AppRegistry, Text, View, ScrollView } from "react-native";
+import { Text, View, ScrollView } from "react-native";
 import {
   Image,
   Subtitle,
@@ -95,6 +95,3 @@ export default class HomeScreen extends Component {
       </ScrollView>;
   }
 }
-
-// skip this line if using Create React Native App
-AppRegistry.registerComponent("AwesomeProject", () => HomeScreen);
