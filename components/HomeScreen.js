@@ -1,88 +1,60 @@
 import React, { Component } from "react";
-import { Text, View, ScrollView } from "react-native";
+import { ScrollView, View, ListView } from "react-native";
+import _ from 'lodash';
+import { connect } from 'react-redux';
 import {
   Image,
   Subtitle,
   Row,
-  Caption,
-  Button,
-  Icon,
   Screen,
   Title,
-  ListView,
   ImageBackground,
   Tile,
   Overlay,
   Heading
 } from "@shoutem/ui";
-import RepoDetailScreen from "./RepoDetailScreen";
+import ListItem from './ListItem';
+import Spinner from "./Spinner";
+import { fetchGitHubRepos } from '../actions';
 
-export default class HomeScreen extends Component {
+class HomeScreen extends Component {
     
-  static navigationOptions = {
-    title: 'Debitoor test',
-    hasHistory: true
-  } 
+  state = {
+    isSpinner: false,
+    gitHubRepos: []
+  }
 
-  constructor(props) {
-    super(props);
-    this.renderRow = this.renderRow.bind(this);
-    this.state = {
-      isSpinner: true,
-      gitHubRepos: []
+  componentWillMount() {
+    this.props.fetchGitHubRepos();
+    this.createDataSource(this.props)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.createDataSource(nextProps)
+  }
+
+  createDataSource({repos}) {
+    const ds = new ListView.DataSource({
+      rowHasChanged: (r1, r2) => r1 !== r2
+    });
+
+    this.dataSource = ds.cloneWithRows(repos);
+  }
+
+  renderContent() {
+    if (this.state.isSpinner) {
+      return <Spinner size="large" />;
     }
-  }
-
-  componentDidMount() {
-    this.getGitHubMostStarredRepositories();
-  }
-
-  getGitHubMostStarredRepositories() {
-    fetch('https://api.github.com/search/repositories?q=stars%3A%3E0&sort=stars&per_page=50&order=desc')
-      .then(res => res.json())
-      .then(resJson => {
-        this.setState({
-          gitHubRepos : resJson.items
-        })
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-  } 
-
-  openRepoDetails(repo) {
-    const data = {}
-    data.name = repo.name
-    data.author = repo.owner.login
-    data.description = repo.description
-    data.avatar = repo.owner.avatar_url
-    data.url = repo.html_url;
-    data.stars = repo.stargazers_count
-
-    this.props.navigation.navigate("RepoDetailScreen", { data });
+    return <ListView dataSource={this.dataSource} renderRow={this.renderRow} enableEmptySections />;
   }
   
   renderRow(repo) {
-    return <Row>
-        <Image styleName="small rounded-corners" source={{ uri: repo.owner.avatar_url }} />
-        <Tile>
-          <Title onPress={() => this.openRepoDetails(repo)}>
-            {repo.name}
-          </Title>
-          <Subtitle>{repo.stargazers_count}</Subtitle>
-        </Tile>
-        <Caption />
-        <Button styleName="right-icon" onPress={() => this.openRepoDetails(repo)}>
-          <Text>View</Text>
-          <Icon name="right-arrow" />
-        </Button>
-      </Row>;
+    return <ListItem repo={repo} />;
   }
-
-
   
   render() {
-    return <ScrollView>
+    return (
+      <ScrollView>
         <ImageBackground styleName="large" source={{ uri: "https://shoutem.github.io/static/getting-started/restaurant-1.jpg" }}>
           <Tile>
             <Overlay>
@@ -91,7 +63,18 @@ export default class HomeScreen extends Component {
             </Overlay>
           </Tile>
         </ImageBackground>
-        <ListView data={this.state.gitHubRepos} renderRow={this.renderRow} />
-      </ScrollView>;
+        {this.renderContent()}
+      </ScrollView>
+    );
   }
 }
+
+const mapStateToProps = state => {
+  const repos = _.map(state.repos, (val, id) => {
+    return {...val, id}
+  });
+
+  return { repos };
+};
+
+export default connect(mapStateToProps, {fetchGitHubRepos})(HomeScreen);

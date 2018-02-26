@@ -1,47 +1,49 @@
 import React, { Component } from "react";
-import { Text, View } from "react-native";
+import { Text, View, Linking } from "react-native";
 import {
   Image,
   Title,
   Subtitle,
   Row,
-  Caption,
   Icon,
-  Card,
   Screen,
   ImageBackground,
   Tile,
   Heading
 } from "@shoutem/ui";
-import HomeScreen from "./HomeScreen";
+import Button from "./Button";
 
 export default class RepoDetailScreen extends Component {
-  
-  static navigationOptions = {
-    title: 'Details'
-  };
 
   render() {
-    this.state = {
-      repo: this.props.navigation.state.params.data
-    };
-
-    const repo = this.state.repo
-
-    return <Screen>
-        <ImageBackground styleName="large" source={{ uri: repo.avatar }} />
+    const { name, description, stargazers_count, owner, html_url } = this.props.repo;
+    
+    return (
+      <Screen>
+        <ImageBackground styleName="large" source={{ uri: owner.avatar_url }} />
         <Tile>
           <Row styleName="small">
-            <Heading>{repo.name}</Heading>
+            <Heading>{name}</Heading>
             <Icon name="add-to-favorites-off" />
-            <Text>{repo.stars}</Text>
+            <Text>{stargazers_count}</Text>
           </Row>
-          <Subtitle styleName="md-gutter-left">{repo.description}</Subtitle>
-          <Caption styleName="md-gutter-left md-gutter-top">
-            {repo.url}
-          </Caption>
-          <Row />
+          <Subtitle styleName="md-gutter-left">{description}</Subtitle>
         </Tile>
-      </Screen>;
+        <View style={styles.containerStyle}>
+          <Button onPress={() => Linking.openURL(html_url)}>Open GitHub</Button>
+        </View>
+      </Screen>
+    );
   }
 }
+
+const styles = {
+  containerStyle: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    backgroundColor: '#FFF',
+    paddingTop: 15,
+    paddingBottom: 10
+  }
+};
