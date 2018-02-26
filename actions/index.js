@@ -7,7 +7,7 @@ export const selectRepo = (repo) => {
 
 export const fetchGitHubRepos = () => {
   return (dispatch) => {
-    fetch('https://api.github.com/search/repositories?q=stars%3A%3E0&sort=stars&per_page=10&order=desc')
+    fetch('https://api.github.com/search/repositories?q=stars%3A%3E0&sort=stars&per_page=100&order=desc')
       .then(res => res.json())
       .then(resJson => {
         dispatch({

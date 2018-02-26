@@ -18,11 +18,6 @@ import Spinner from "./Spinner";
 import { fetchGitHubRepos } from '../actions';
 
 class HomeScreen extends Component {
-    
-  state = {
-    isSpinner: false,
-    gitHubRepos: []
-  }
 
   componentWillMount() {
     this.props.fetchGitHubRepos();
@@ -42,7 +37,7 @@ class HomeScreen extends Component {
   }
 
   renderContent() {
-    if (this.state.isSpinner) {
+    if (this.props.isSpinner) {
       return <Spinner size="large" />;
     }
     return <ListView dataSource={this.dataSource} renderRow={this.renderRow} enableEmptySections />;
