@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { ScrollView, View, ListView } from "react-native";
-import _ from 'lodash';
 import { connect } from 'react-redux';
 import {
   Image,
@@ -15,13 +14,14 @@ import {
 } from "@shoutem/ui";
 import ListItem from './ListItem';
 import Spinner from "./Spinner";
-import { fetchGitHubRepos } from '../actions';
+import { fetchGitHubRepos, turnOnSpinner } from '../actions';
 
 class HomeScreen extends Component {
 
   componentWillMount() {
-    this.props.fetchGitHubRepos();
-    this.createDataSource(this.props)
+    this.props.turnOnSpinner();
+    this.props.fetchGitHubRepos()
+    this.createDataSource(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -37,7 +37,7 @@ class HomeScreen extends Component {
   }
 
   renderContent() {
-    if (this.props.isSpinner) {
+    if (this.props.loading) {
       return <Spinner size="large" />;
     }
     return <ListView dataSource={this.dataSource} renderRow={this.renderRow} enableEmptySections />;
@@ -65,11 +65,7 @@ class HomeScreen extends Component {
 }
 
 const mapStateToProps = state => {
-  const repos = _.map(state.repos, (val, id) => {
-    return {...val, id}
-  });
-
-  return { repos };
+  return { repos: state.repos, loading: state.loading };
 };
 
-export default connect(mapStateToProps, {fetchGitHubRepos})(HomeScreen);
+export default connect(mapStateToProps, {fetchGitHubRepos, turnOnSpinner })(HomeScreen);

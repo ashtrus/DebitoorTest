@@ -1,8 +1,9 @@
 import { combineReducers } from 'redux';
-import SelectReducer from './SelectReducer';
 import GitHubFetchReducer from './GitHubFetchReducer';
+import SpinnerReducer from './SpinnerReducer';
 
+// repos: state in store key
 export default combineReducers({
-  selectedGitHubItemId: SelectReducer,
-  repos: GitHubFetchReducer
+	repos: GitHubFetchReducer,
+	loading: SpinnerReducer
 });

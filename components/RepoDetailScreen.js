@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { Text, View, Linking } from "react-native";
 import {
   Image,
-  Title,
   Subtitle,
   Row,
   Icon,
