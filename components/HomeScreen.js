@@ -14,21 +14,21 @@ import {
 } from "@shoutem/ui";
 import ListItem from './ListItem';
 import Spinner from "./Spinner";
-import { fetchGitHubRepos, turnOnSpinner } from '../actions';
+import Input from "./Input";
+import { fetchGitHubRepos, turnOnSpinner, fetchSearchedGitHubRepos } from '../actions';
 
 class HomeScreen extends Component {
-
   componentWillMount() {
     this.props.turnOnSpinner();
-    this.props.fetchGitHubRepos()
+    this.props.fetchGitHubRepos();
     this.createDataSource(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
-    this.createDataSource(nextProps)
+    this.createDataSource(nextProps);
   }
 
-  createDataSource({repos}) {
+  createDataSource({ repos }) {
     const ds = new ListView.DataSource({
       rowHasChanged: (r1, r2) => r1 !== r2
     });
@@ -40,16 +40,25 @@ class HomeScreen extends Component {
     if (this.props.loading) {
       return <Spinner size="large" />;
     }
-    return <ListView dataSource={this.dataSource} renderRow={this.renderRow} enableEmptySections />;
+    return (
+      <ListView
+        dataSource={this.dataSource}
+        renderRow={this.renderRow}
+        enableEmptySections
+      />
+    );
   }
-  
+
   renderRow(repo) {
     return <ListItem repo={repo} />;
   }
-  
+
+  onSearchValChange(val) {
+    this.props.fetchSearchedGitHubRepos(val);
+  }
+
   render() {
-    return (
-      <ScrollView>
+    return <ScrollView>
         <ImageBackground styleName="large" source={{ uri: "https://shoutem.github.io/static/getting-started/restaurant-1.jpg" }}>
           <Tile>
             <Overlay>
@@ -58,14 +67,29 @@ class HomeScreen extends Component {
             </Overlay>
           </Tile>
         </ImageBackground>
+        <View>
+        <Input
+          label="Search"
+          placeholder="Search"
+          onChangeText={ this.onSearchValChange.bind(this) }
+          value={ this.props.searchTerm }
+        />
+        </View>
         {this.renderContent()}
-      </ScrollView>
-    );
+      </ScrollView>;
   }
 }
 
 const mapStateToProps = state => {
-  return { repos: state.repos, loading: state.loading };
+  return {
+    repos: state.repos,
+    loading: state.loading,
+    searchTerm: state.searchTerm
+  };
 };
 
-export default connect(mapStateToProps, {fetchGitHubRepos, turnOnSpinner })(HomeScreen);
+export default connect(mapStateToProps, {
+  fetchGitHubRepos,
+  turnOnSpinner,
+  fetchSearchedGitHubRepos
+})(HomeScreen);
